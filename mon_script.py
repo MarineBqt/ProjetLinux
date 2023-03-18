@@ -6,11 +6,10 @@ from dash.dependencies import Input, Output
 import subprocess
 from dash import dcc
 import pandas as pd
-from pathlib import Path
-import matplotlib.pyplot as plt
+#from pathlib import Path
+#import matplotlib.pyplot as plt
 import datetime as dt
-import plotly.graph_objs as go
-
+import plotly.express as px
 
 # Define the Dash app
 app = dash.Dash(__name__)
@@ -20,12 +19,16 @@ app.title = "Tesla Dashboard"
 app.layout = html.Div(children=[
     html.H1("Tesla Inc"),
     html.Div(id="live-update-text"),
+    html.H2("Tesla Price Over Time", style={"text-align": "center"}),
     dcc.Graph(id="live-update-graph"),
+    html.Br(),
+    html.H2("Volume On 5 days", style={"text-align": "center"}),
+    dcc.Graph(id="live-update-graph2"),
     dcc.Interval(id="interval-component", interval=60*1000, n_intervals=0),
     html.H1("Daily Report"),
     html.Ul(id='live-update-report')
 ])
-
+#style={'backgroundColor': '#2b2a2a','margin': '-5','padding': '0','boxSizing': 'border-box','color': '#dcdcdc'}
 
 # Define a function to update the text on the dashboard
 @app.callback(
@@ -46,13 +49,30 @@ def update_metrics(n):
 )
 
 
-#Update the graph
+#Update the graph 1 (line chart)
 def update_graph(n):
     df = pd.read_csv('history.csv', skiprows=[0],names=['timestamp', 'price'])
     df["timestamp"] = pd.to_datetime(df["timestamp"], unit="s")
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["price"], name="Price"))
-    fig.update_layout(title="Bitcoin Price Over Time", xaxis_title="Date", yaxis_title="Price (USD)")
+    fig=px.line(df, x="timestamp", y="price",markers=True)
+    fig.update_layout(template="plotly_dark")
+    return fig
+
+
+# Define a function to update the graph on the dashboard
+@app.callback(
+    dash.dependencies.Output("live-update-graph2", "figure"),
+    dash.dependencies.Input("interval-component", "n_intervals")
+)
+
+
+#Update the graph 2 (bar chart)
+def update_graph2(n):
+    df = pd.read_csv('report.csv', skiprows=[0],names=['timestamp','prev_close', 'open_price','cap_boursiere','volume','target'])
+    df["timestamp"] = pd.to_datetime(df["timestamp"], unit="s")
+    df=df.tail(5)
+    #df['timestamp'] = df['timestamp'].apply(lambda x: x.strftime('%d'))
+    fig=px.bar(df,x='timestamp',y="volume",color="volume",color_continuous_scale='RdBu', text='volume')
+    fig.update_layout(template="plotly_dark")
     return fig
 
 # Define a function to update the text on the dashboard
