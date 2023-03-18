@@ -26,7 +26,16 @@ app.layout = html.Div(children=[
     dcc.Graph(id="live-update-graph2"),
     dcc.Interval(id="interval-component", interval=60*1000, n_intervals=0),
     html.H1("Daily Report"),
-    html.Ul(id='live-update-report')
+    html.Ul(id='live-update-report'),
+    html.Footer(
+            html.I([
+                'Website : ',
+                html.A("YahooFinance", href="https://fr.finance.yahoo.com/quote/TSLA?p=TSLA"),
+                '. Code ',
+                html.A("GitHub", href="https://github.com/MarineBqt/ProjetLinux"),
+                '.',
+            ])
+        ),
 ])
 #style={'backgroundColor': '#2b2a2a','margin': '-5','padding': '0','boxSizing': 'border-box','color': '#dcdcdc'}
 
