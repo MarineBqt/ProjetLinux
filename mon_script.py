@@ -69,7 +69,15 @@ def update_graph(n):
         rangebreaks=[
             dict(bounds=["sat", "mon"]),  # hide weekends, eg. hide sat to before mon
             dict(bounds=[19.9, 14.5], pattern="hour"),  # hide hours outside of 20pm-14.30pm
-        ]
+        ],
+        rangeselector=dict(
+            buttons=list([
+                dict(count=1, label="1h", step="hour", stepmode="backward"),
+                dict(count=1, label="1d", step="day", stepmode="backward"),
+                dict(step="all")
+            ]),
+            bgcolor="gray",
+        )
     )
     fig.update_layout(template="plotly_dark")
     return fig
