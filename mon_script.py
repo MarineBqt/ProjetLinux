@@ -146,6 +146,7 @@ def update_graph3(n):
             dict(bounds=[19.9, 14.5], pattern="hour"),  # hide hours outside of 20pm-14.30pm
         ],
     )
+    fig.update_traces(line=dict(color='orange'))
     fig.update_layout(template="plotly_dark")
     return fig
 
