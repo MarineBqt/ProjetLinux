@@ -6,8 +6,7 @@ from dash.dependencies import Input, Output
 import subprocess
 from dash import dcc
 import pandas as pd
-#from pathlib import Path
-#import matplotlib.pyplot as plt
+from pathlib import Path
 import datetime as dt
 import plotly.express as px
 
@@ -63,6 +62,15 @@ def update_graph(n):
     df = pd.read_csv('history.csv', skiprows=[0],names=['timestamp', 'price'])
     df["timestamp"] = pd.to_datetime(df["timestamp"], unit="s")
     fig=px.line(df, x="timestamp", y="price",markers=True)
+    fig.update_yaxes(tickprefix="$")
+    fig.update_xaxes(
+        title_text="time",
+        rangeslider_visible=False,
+        rangebreaks=[
+            dict(bounds=["sat", "mon"]),  # hide weekends, eg. hide sat to before mon
+            dict(bounds=[19.9, 14.5], pattern="hour"),  # hide hours outside of 20pm-14.30pm
+        ]
+    )
     fig.update_layout(template="plotly_dark")
     return fig
 
@@ -79,8 +87,8 @@ def update_graph2(n):
     df = pd.read_csv('report.csv', skiprows=[0],names=['timestamp','prev_close', 'open_price','cap_boursiere','volume','target'])
     df["timestamp"] = pd.to_datetime(df["timestamp"], unit="s")
     df=df.tail(5)
-    #df['timestamp'] = df['timestamp'].apply(lambda x: x.strftime('%d'))
     fig=px.bar(df,x='timestamp',y="volume",color="volume",color_continuous_scale='RdBu', text='volume')
+    fig.update_xaxes(title_text="date")
     fig.update_layout(template="plotly_dark")
     return fig
 
