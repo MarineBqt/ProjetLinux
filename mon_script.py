@@ -9,6 +9,7 @@ import pandas as pd
 from pathlib import Path
 import datetime as dt
 import plotly.express as px
+import numpy as np
 
 # Define the Dash app
 app = dash.Dash(__name__)
@@ -22,8 +23,11 @@ app.layout = html.Div(children=[
     dcc.Graph(id="live-update-graph"),
     html.Br(),
     html.H2("Volume On 5 days", style={"text-align": "center"}),
-    dcc.Graph(id="live-update-graph2"),
+    dcc.Graph(id="live-update-volume"),
     dcc.Interval(id="interval-component", interval=60*1000, n_intervals=0),
+    html.Br(),
+    html.H2("Tesla Volatility Over Time", style={"text-align": "center"}),
+    dcc.Graph(id="live-update-volatility"),
     html.H1("Daily Report"),
     html.Ul(id='live-update-report'),
     html.Footer(
@@ -85,7 +89,7 @@ def update_graph(n):
 
 # Define a function to update the graph on the dashboard
 @app.callback(
-    dash.dependencies.Output("live-update-graph2", "figure"),
+    dash.dependencies.Output("live-update-volume", "figure"),
     dash.dependencies.Input("interval-component", "n_intervals")
 )
 
@@ -116,6 +120,34 @@ def update_report(n):
              html.Li(f"Volume: {last_row[3]} M"),
              html.Li(f"Target: {last_row[4]}")]
     return items
+
+#Update the graph 3 volatility (line chart)
+@app.callback(
+    dash.dependencies.Output("live-update-volatility", "figure"),
+    dash.dependencies.Input("interval-component", "n_intervals")
+)
+
+def update_graph3(n):
+    df = pd.read_csv('history.csv', skiprows=[0], names=['timestamp', 'price'])
+    df["timestamp"] = pd.to_datetime(df["timestamp"], unit="s")
+
+    # Calculate the daily returns and volatility
+    df["returns"] = df["price"].pct_change()
+    df["volatility"] = df["returns"].rolling(window=30).std() * np.sqrt(30) #volatility over 30 days
+
+    # Plot the volatility over time
+    fig = px.line(df, x="timestamp", y="volatility", markers=True)
+    fig.update_yaxes(title_text="volatility")
+    fig.update_xaxes(
+        title_text="time",
+        rangeslider_visible=False,
+        rangebreaks=[
+            dict(bounds=["sat", "mon"]),  # hide weekends, eg. hide sat to before mon
+            dict(bounds=[19.9, 14.5], pattern="hour"),  # hide hours outside of 20pm-14.30pm
+        ],
+    )
+    fig.update_layout(template="plotly_dark")
+    return fig
 
 #Executer l'app dash
 if __name__ == '__main__':
