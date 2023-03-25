@@ -10,6 +10,7 @@ from pathlib import Path
 import datetime as dt
 import plotly.express as px
 import numpy as np
+import plotly.graph_objects as go
 
 # Define the Dash app
 app = dash.Dash(__name__)
@@ -17,8 +18,14 @@ app.title = "Tesla Dashboard"
 
 # Define the layout of the app
 app.layout = html.Div(children=[
-    html.H1("Tesla Inc"),
-    html.Div(id="live-update-text"),
+    html.Div(
+           style={'backgroundColor': '#2E006C',"text-align": "center", 'color': 'white','padding': '10px'},  # set white background and padding
+           children=[
+               html.H1("Tesla Inc Dashboard"),
+               html.P("Evolution de l'action Tesla"),
+               html.Div(id="live-update-text",style={'padding-bottom': '20px'}),
+           ]
+    ),
     html.H2("Tesla Price Over Time", style={"text-align": "center"}),
     dcc.Graph(id="live-update-graph"),
     html.Br(),
@@ -83,7 +90,7 @@ def update_graph(n):
             bgcolor="gray",
         )
     )
-    fig.update_layout(template="plotly_dark")
+    fig.update_layout(template="plotly_dark")    
     return fig
 
 
