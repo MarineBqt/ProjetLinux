@@ -15,4 +15,3 @@ if [ ! -s "$CSV_FILE" ]; then
 fi
 
 echo $timestamp,$price >> $CSV_FILE
-# /home/ec2-user/ProjetLinux/history.csv
