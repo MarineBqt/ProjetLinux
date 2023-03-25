@@ -35,7 +35,14 @@ app.layout = html.Div(children=[
     html.Br(),
     html.H2("Tesla Volatility Over Time", style={"text-align": "center"}),
     dcc.Graph(id="live-update-volatility"),
-    html.H1("Daily Report"),
+    html.Br(),
+    html.Div(
+       style={'backgroundColor': '#2E006C',"text-align": "center", 'color': 'white','padding': '10px'},  # set white background and padding
+       children=[
+           html.H1("Daily Report"),
+           #html.Ul(id='live-update-report'),
+       ]
+    ),
     html.Ul(id='live-update-report'),
     html.Footer(
             html.I([
@@ -47,7 +54,6 @@ app.layout = html.Div(children=[
             ])
         ),
 ])
-#style={'backgroundColor': '#2b2a2a','margin': '-5','padding': '0','boxSizing': 'border-box','color': '#dcdcdc'}
 
 # Define a function to update the text on the dashboard
 @app.callback(
